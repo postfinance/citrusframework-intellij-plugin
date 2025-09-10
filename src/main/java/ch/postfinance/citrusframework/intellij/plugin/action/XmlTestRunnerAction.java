@@ -8,8 +8,8 @@ import com.intellij.execution.executors.DefaultRunExecutor;
  */
 public class XmlTestRunnerAction extends XmlTestExecuteAbstractAction {
 
-    @Override
-    public Executor getExecutor() {
-        return DefaultRunExecutor.getRunExecutorInstance();
-    }
+  @Override
+  public Executor getExecutor() {
+    return DefaultRunExecutor.getRunExecutorInstance();
+  }
 }

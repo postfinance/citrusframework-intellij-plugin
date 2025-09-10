@@ -1,0 +1,11 @@
+.git/
+.gradle/
+.husky/
+.idea/
+.intellijPlatform/
+.kotlin/
+
+build/
+node_modules/
+
+**/pnpm-lock.yaml

@@ -8,8 +8,8 @@ import com.intellij.execution.executors.DefaultDebugExecutor;
  */
 public class XmlTestDebuggerAction extends XmlTestExecuteAbstractAction {
 
-    @Override
-    public Executor getExecutor() {
-        return DefaultDebugExecutor.getDebugExecutorInstance();
-    }
+  @Override
+  public Executor getExecutor() {
+    return DefaultDebugExecutor.getDebugExecutorInstance();
+  }
 }
