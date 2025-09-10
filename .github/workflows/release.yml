@@ -56,14 +56,27 @@ jobs:
 
           ./gradlew patchChangelog --release-note-file=$RELEASE_NOTE
 
-      # Publish the plugin to JetBrains Marketplace
+      # Publish the Plugin Image to the GitHub Container Registry
+      - name: Prepare updatePlugins.xml
+        run: |
+          export RELEASE_VERSION="${{ github.event.release.tag_name }}"
+          mkdir -p build/docker
+          envsubst < src/main/docker/updatePlugins-template.xml > build/docker/updatePlugins.xml
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Publish the Plugin Image to the GitHub Container Registry
       - name: Publish Plugin
-        env:
-          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
-        run: ./gradlew publishPlugin
+        run: |
+          docker build --push \
+            -f src/main/docker/Dockerfile
+            -t ghcr.io/postfinance/citrusframework/intellij-plugin/repository:${{ github.event.release.tag_name }}
+            .
 
       # Upload an artifact as a release asset
       - name: Upload Release Asset

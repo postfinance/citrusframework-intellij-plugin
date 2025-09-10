@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugins>
+    <!-- Version will be set at build time (build.sh) -->
+    <plugin id="ch.postfinance.citrusframework.plugins.runner"
+            url="https://localhost/citrus-xml-test-runner.jar"
+            version="$RELEASE_VERSION">
+        <name>Citrus IntelliJ Platform Plugin</name>
+    </plugin>
+</plugins>

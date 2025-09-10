@@ -1,0 +1,3 @@
+**/*
+!build/libs/citrus-intellij-platform-plugin-*.jar
+!build/docker

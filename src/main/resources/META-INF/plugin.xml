@@ -1,15 +1,44 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.bbortt.citrusframeworkintellijplugin</id>
+    <id>ch.postfinance.citrusframework.intellij.plugin</id>
     <name>citrusframework-intellij-plugin</name>
-    <vendor>bbortt</vendor>
+    <vendor>Postfinance AG</vendor>
 
     <depends>com.intellij.modules.platform</depends>
-
-    <resource-bundle>messages.MyBundle</resource-bundle>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.bbortt.citrusframeworkintellijplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.bbortt.citrusframeworkintellijplugin.startup.MyProjectActivity" />
     </extensions>
+
+    <actions>
+        <group id="ch.postfinance.citrusframework.intellij.plugin" text="Run XML Citrus Test" popup="true" icon="/zitrone.png">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <action id="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestRunnerAction"
+                    class="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestRunnerAction"
+                    text="Run XML Test" description="Run a Citrus XML test">
+                <keyboard-shortcut first-keystroke="control alt R" keymap="$default"/>
+            </action>
+            <action id="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestRunnerSelectConfigurationAction"
+                    class="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestRunnerSelectConfigurationAction"
+                    text="Select Run Configuration" description="The Run Configuration to execute the test">
+                <keyboard-shortcut first-keystroke="control alt C" keymap="$default"/>
+            </action>
+        </group>
+
+        <group id="ch.pf.sir.citrus.debugger" text="Debug XML Citrus Test" popup="true" icon="/zitrone.png">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <action id="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestDebuggerAction"
+                    class="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestDebuggerAction" text="Debug XML Test"
+                    description="Debug a Citrus XML Test">
+                <keyboard-shortcut first-keystroke="control alt D" keymap="$default"/>
+            </action>
+            <action id="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestDebuggerSelectConfigurationAction"
+                    class="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestDebuggerSelectConfigurationAction"
+                    text="Select a Run Configuration" description="The Run Configuration to debug the test">
+                <keyboard-shortcut first-keystroke="control alt V" keymap="$default"/>
+            </action>
+        </group>
+    </actions>
 </idea-plugin>
