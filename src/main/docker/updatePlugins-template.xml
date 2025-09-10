@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <plugins>
-  <!-- Version will be set at build time (build.sh) -->
+  <!--
+     Version will be set at build time, see the `Prepare updatePlugins.xml` in `.github/release.yml`.
+     Host must be given to container at runtime, e.g. `docker run -e PLUGIN_REPOSITORY_HOST=...`.
+    -->
   <plugin
     id="ch.postfinance.citrusframework.xml.test.runner"
-    url="https://localhost/citrus-xml-test-runner.jar"
+    url="$PLUGIN_REPOSITORY_HOST/citrus-intellij-platform-plugin.jar"
     version="$RELEASE_VERSION"
   >
     <name>PF Citrus XML Plugin</name>
