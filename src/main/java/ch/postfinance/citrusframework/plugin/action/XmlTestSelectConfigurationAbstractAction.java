@@ -1,11 +1,11 @@
-package ch.postfinance.citrusframework.intellij.plugin.action;
+package ch.postfinance.citrusframework.plugin.action;
 
-import static ch.postfinance.citrusframework.intellij.plugin.VirtualFileUtil.retrieveTestFileNames;
+import static ch.postfinance.citrusframework.plugin.VirtualFileUtil.retrieveTestFileNames;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import ch.postfinance.citrusframework.intellij.plugin.dialog.RunConfigurationDialogWrapper;
-import ch.postfinance.citrusframework.intellij.plugin.model.RunConfig;
+import ch.postfinance.citrusframework.plugin.dialog.RunConfigurationDialogWrapper;
+import ch.postfinance.citrusframework.plugin.model.RunConfig;
 import com.intellij.execution.Executor;
 import com.intellij.execution.JavaTestConfigurationBase;
 import com.intellij.execution.ProgramRunnerUtil;

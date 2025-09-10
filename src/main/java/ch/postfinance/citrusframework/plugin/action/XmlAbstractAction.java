@@ -1,6 +1,6 @@
-package ch.postfinance.citrusframework.intellij.plugin.action;
+package ch.postfinance.citrusframework.plugin.action;
 
-import static ch.postfinance.citrusframework.intellij.plugin.VirtualFileUtil.containsAtLeastOneTestFile;
+import static ch.postfinance.citrusframework.plugin.VirtualFileUtil.containsAtLeastOneTestFile;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import static java.util.Objects.nonNull;
 

@@ -1,4 +1,4 @@
-package ch.postfinance.citrusframework.intellij.plugin.action;
+package ch.postfinance.citrusframework.plugin.action;
 
 import com.intellij.execution.Executor;
 import com.intellij.execution.executors.DefaultDebugExecutor;

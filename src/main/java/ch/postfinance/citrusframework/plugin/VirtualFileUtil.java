@@ -1,4 +1,4 @@
-package ch.postfinance.citrusframework.intellij.plugin;
+package ch.postfinance.citrusframework.plugin;
 
 import static com.intellij.ide.highlighter.XmlFileType.DEFAULT_EXTENSION;
 import static com.intellij.ide.highlighter.XmlFileType.DOT_DEFAULT_EXTENSION;

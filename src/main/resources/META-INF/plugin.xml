@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <id>ch.postfinance.citrusframework.intellij.plugin</id>
-  <name>citrusframework-intellij-plugin</name>
+  <id>ch.postfinance.citrusframework.xml.test.runner</id>
+  <name>PF Citrus XML Plugin</name>
   <vendor>Postfinance AG</vendor>
 
   <depends>com.intellij.modules.platform</depends>
@@ -19,16 +19,16 @@
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
       <add-to-group group-id="EditorPopupMenu" anchor="last" />
       <action
-        id="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestRunnerAction"
-        class="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestRunnerAction"
+        id="ch.postfinance.citrusframework.plugin.action.XmlTestRunnerAction"
+        class="ch.postfinance.citrusframework.plugin.action.XmlTestRunnerAction"
         text="Run XML Test"
         description="Run a Citrus XML test"
       >
         <keyboard-shortcut first-keystroke="control alt R" keymap="$default" />
       </action>
       <action
-        id="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestRunnerSelectConfigurationAction"
-        class="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestRunnerSelectConfigurationAction"
+        id="ch.postfinance.citrusframework.plugin.action.XmlTestRunnerSelectConfigurationAction"
+        class="ch.postfinance.citrusframework.plugin.action.XmlTestRunnerSelectConfigurationAction"
         text="Select Run Configuration"
         description="The Run Configuration to execute the test"
       >
@@ -45,16 +45,16 @@
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
       <add-to-group group-id="EditorPopupMenu" anchor="last" />
       <action
-        id="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestDebuggerAction"
-        class="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestDebuggerAction"
+        id="ch.postfinance.citrusframework.plugin.action.XmlTestDebuggerAction"
+        class="ch.postfinance.citrusframework.plugin.action.XmlTestDebuggerAction"
         text="Debug XML Test"
         description="Debug a Citrus XML Test"
       >
         <keyboard-shortcut first-keystroke="control alt D" keymap="$default" />
       </action>
       <action
-        id="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestDebuggerSelectConfigurationAction"
-        class="ch.postfinance.citrusframework.intellij.plugin.action.XmlTestDebuggerSelectConfigurationAction"
+        id="ch.postfinance.citrusframework.plugin.action.XmlTestDebuggerSelectConfigurationAction"
+        class="ch.postfinance.citrusframework.plugin.action.XmlTestDebuggerSelectConfigurationAction"
         text="Select a Run Configuration"
         description="The Run Configuration to debug the test"
       >

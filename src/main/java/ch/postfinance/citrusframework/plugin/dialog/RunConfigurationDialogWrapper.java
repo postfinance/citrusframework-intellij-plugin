@@ -1,6 +1,6 @@
-package ch.postfinance.citrusframework.intellij.plugin.dialog;
+package ch.postfinance.citrusframework.plugin.dialog;
 
-import ch.postfinance.citrusframework.intellij.plugin.model.RunConfig;
+import ch.postfinance.citrusframework.plugin.model.RunConfig;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;

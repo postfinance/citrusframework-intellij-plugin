@@ -1,6 +1,6 @@
-package ch.postfinance.citrusframework.intellij.plugin.action;
+package ch.postfinance.citrusframework.plugin.action;
 
-import static ch.postfinance.citrusframework.intellij.plugin.VirtualFileUtil.retrieveTestFileNames;
+import static ch.postfinance.citrusframework.plugin.VirtualFileUtil.retrieveTestFileNames;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 

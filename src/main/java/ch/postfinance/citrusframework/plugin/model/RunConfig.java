@@ -1,4 +1,4 @@
-package ch.postfinance.citrusframework.intellij.plugin.model;
+package ch.postfinance.citrusframework.plugin.model;
 
 public class RunConfig {
 
