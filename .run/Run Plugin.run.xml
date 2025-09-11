@@ -1,6 +1,15 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Plugin" type="GradleRunConfiguration" factoryName="Gradle">
-    <log_file alias="IDE logs" path="$PROJECT_DIR$/build/idea-sandbox/*/log/idea.log" show_all="true" />
+  <configuration
+    default="false"
+    name="Run Plugin"
+    type="GradleRunConfiguration"
+    factoryName="Gradle"
+  >
+    <log_file
+      alias="IDE logs"
+      path="$PROJECT_DIR$/build/idea-sandbox/*/log/idea.log"
+      show_all="true"
+    />
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -17,7 +26,9 @@
       <option name="vmOptions" value="" />
     </ExternalSystemSettings>
     <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-    <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+    <ExternalSystemReattachDebugProcess>
+      true
+    </ExternalSystemReattachDebugProcess>
     <DebugAllEnabled>false</DebugAllEnabled>
     <RunAsTest>false</RunAsTest>
     <method v="2" />

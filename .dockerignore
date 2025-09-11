@@ -1,0 +1,4 @@
+**/*
+!build/libs/citrusframework-intellij-plugin-*.jar
+!build/docker
+!src/main/docker/replace-plugin-template.sh
