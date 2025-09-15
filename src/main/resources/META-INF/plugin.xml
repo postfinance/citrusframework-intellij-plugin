@@ -21,7 +21,7 @@
         class="ch.postfinance.citrusframework.plugin.action.XmlTestRunnerAction"
         text="Run XML Test"
         description="Run a Citrus XML test"
-        icon="AllIcons.Execute"
+        icon="AllIcons.Actions.Execute"
       >
         <keyboard-shortcut first-keystroke="control alt R" keymap="$default" />
       </action>
@@ -30,7 +30,7 @@
         class="ch.postfinance.citrusframework.plugin.action.XmlTestRunnerSelectConfigurationAction"
         text="Select Run Configuration"
         description="The Run Configuration to execute the test"
-        icon="AllIcons.Execute"
+        icon="AllIcons.Actions.Execute"
       >
         <keyboard-shortcut first-keystroke="control alt C" keymap="$default" />
       </action>
@@ -47,7 +47,7 @@
         class="ch.postfinance.citrusframework.plugin.action.XmlTestDebuggerAction"
         text="Debug XML Test"
         description="Debug a Citrus XML Test"
-        icon="AllIcons.StartDebugger"
+        icon="AllIcons.Actions.StartDebugger"
       >
         <keyboard-shortcut first-keystroke="control alt D" keymap="$default" />
       </action>
@@ -56,7 +56,7 @@
         class="ch.postfinance.citrusframework.plugin.action.XmlTestDebuggerSelectConfigurationAction"
         text="Select a Run Configuration"
         description="The Run Configuration to debug the test"
-        icon="AllIcons.StartDebugger"
+        icon="AllIcons.Actions.StartDebugger"
       >
         <keyboard-shortcut first-keystroke="control alt V" keymap="$default" />
       </action>
