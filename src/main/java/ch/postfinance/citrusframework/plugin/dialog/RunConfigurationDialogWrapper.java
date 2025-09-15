@@ -48,8 +48,8 @@ public class RunConfigurationDialogWrapper extends DialogWrapper {
     );
     runConfigDescriptorJBList.setCellRenderer(
       SimpleListCellRenderer.create((label, runConfig, index) -> {
-        label.setText(runConfig.getName());
-        label.setIcon(runConfigIcons.get(runConfig.getType()));
+        label.setText(runConfig.name());
+        label.setIcon(runConfigIcons.get(runConfig.type()));
       })
     );
 

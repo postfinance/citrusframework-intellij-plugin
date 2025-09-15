@@ -77,7 +77,7 @@ public abstract class XmlTestSelectConfigurationAbstractAction
         RunnerAndConfigurationSettings
       > foundRunnerAndConfigurationSettings = getRunnerAndConfigurationSettings(
         runManager.getAllSettings(),
-        selectedRunConfig.getName()
+        selectedRunConfig.name()
       );
 
       //Set the new selected configuration settings to the RunManager
