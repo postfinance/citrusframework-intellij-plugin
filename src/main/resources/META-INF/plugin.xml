@@ -11,18 +11,17 @@
 
   <actions>
     <group
-      id="ch.postfinance.citrusframework.intellij.plugin"
+      id="ch.postfinance.citrusframework.plugin.runner"
       text="Run XML Citrus Test"
       popup="true"
       icon="/zitrone.png"
     >
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
-      <add-to-group group-id="EditorPopupMenu" anchor="last" />
       <action
         id="ch.postfinance.citrusframework.plugin.action.XmlTestRunnerAction"
         class="ch.postfinance.citrusframework.plugin.action.XmlTestRunnerAction"
         text="Run XML Test"
         description="Run a Citrus XML test"
+        icon="AllIcons.Execute"
       >
         <keyboard-shortcut first-keystroke="control alt R" keymap="$default" />
       </action>
@@ -31,24 +30,24 @@
         class="ch.postfinance.citrusframework.plugin.action.XmlTestRunnerSelectConfigurationAction"
         text="Select Run Configuration"
         description="The Run Configuration to execute the test"
+        icon="AllIcons.Execute"
       >
         <keyboard-shortcut first-keystroke="control alt C" keymap="$default" />
       </action>
     </group>
 
     <group
-      id="ch.pf.sir.citrus.debugger"
+      id="ch.postfinance.citrusframework.plugin.debugger"
       text="Debug XML Citrus Test"
       popup="true"
       icon="/zitrone.png"
     >
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
-      <add-to-group group-id="EditorPopupMenu" anchor="last" />
       <action
         id="ch.postfinance.citrusframework.plugin.action.XmlTestDebuggerAction"
         class="ch.postfinance.citrusframework.plugin.action.XmlTestDebuggerAction"
         text="Debug XML Test"
         description="Debug a Citrus XML Test"
+        icon="AllIcons.StartDebugger"
       >
         <keyboard-shortcut first-keystroke="control alt D" keymap="$default" />
       </action>
@@ -57,9 +56,23 @@
         class="ch.postfinance.citrusframework.plugin.action.XmlTestDebuggerSelectConfigurationAction"
         text="Select a Run Configuration"
         description="The Run Configuration to debug the test"
+        icon="AllIcons.StartDebugger"
       >
         <keyboard-shortcut first-keystroke="control alt V" keymap="$default" />
       </action>
+      <separator />
+    </group>
+
+    <group
+      id="ch.postfinance.citrusframework.plugin.wrapper"
+      text="Citrus Plugin Group"
+    >
+      <separator />
+      <reference ref="ch.postfinance.citrusframework.plugin.runner" />
+      <reference ref="ch.postfinance.citrusframework.plugin.debugger" />
+      <separator />
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
+      <add-to-group group-id="EditorPopupMenu" anchor="last" />
     </group>
   </actions>
 </idea-plugin>
