@@ -60,6 +60,20 @@ public class VirtualFileUtilTest {
 
       assertThat(result).isEmpty();
     }
+
+    @Test
+    public void returnsEmpty_whenJavaTestFileSelected() {
+      VirtualFile file = mockNonTestFile(
+        "DebitTest.java",
+        "/project/DebitTest.java"
+      );
+
+      String result = VirtualFileUtil.retrieveTestFileNames(
+        new VirtualFile[] { file }
+      );
+
+      assertThat(result).isEmpty();
+    }
   }
 
   public static class ContainsAtLeastOneTestFile {

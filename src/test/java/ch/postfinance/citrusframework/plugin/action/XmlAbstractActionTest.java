@@ -1,5 +1,6 @@
 package ch.postfinance.citrusframework.plugin.action;
 
+import static com.intellij.openapi.actionSystem.PlatformCoreDataKeys.SELECTED_ITEMS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -7,8 +8,8 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ch.postfinance.citrusframework.plugin.VirtualFileUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -40,7 +41,7 @@ public class XmlAbstractActionTest {
 
       when(event.getProject()).thenReturn(null);
       when(event.getPresentation()).thenReturn(presentation);
-      when(event.getData(PlatformCoreDataKeys.SELECTED_ITEMS)).thenReturn(
+      when(event.getData(SELECTED_ITEMS)).thenReturn(
         new Object[] { mock(VirtualFile.class) }
       );
 
@@ -57,24 +58,15 @@ public class XmlAbstractActionTest {
 
       when(event.getProject()).thenReturn(mock(Project.class)); // non-null project
       when(event.getPresentation()).thenReturn(presentation);
-      when(event.getData(PlatformCoreDataKeys.SELECTED_ITEMS)).thenReturn(
-        new Object[] { testFile }
-      );
+      when(event.getData(SELECTED_ITEMS)).thenReturn(new Object[] { testFile });
 
-      // Mock VirtualFileUtil static method
       try (
-        MockedStatic<
-          ch.postfinance.citrusframework.plugin.VirtualFileUtil
-        > util = mockStatic(
-          ch.postfinance.citrusframework.plugin.VirtualFileUtil.class
+        MockedStatic<VirtualFileUtil> virtualFileUtil = mockStatic(
+          VirtualFileUtil.class
         )
       ) {
-        util
-          .when(() ->
-            ch.postfinance.citrusframework.plugin.VirtualFileUtil.containsAtLeastOneTestFile(
-              any()
-            )
-          )
+        virtualFileUtil
+          .when(() -> VirtualFileUtil.containsAtLeastOneTestFile(any()))
           .thenReturn(true);
 
         fixture.update(event);

@@ -6,6 +6,7 @@ import static ch.postfinance.citrusframework.plugin.UserMessages.PROJECT_NOT_FOU
 import static ch.postfinance.citrusframework.plugin.VirtualFileUtil.retrieveTestFileNames;
 import static ch.postfinance.citrusframework.plugin.action.RunnerArgs.D_TESTS_TO_RUN;
 import static com.intellij.execution.ProgramRunnerUtil.executeConfiguration;
+import static com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE_ARRAY;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -16,7 +17,6 @@ import com.intellij.execution.JavaTestConfigurationBase;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
 import java.util.List;
 import java.util.Optional;
@@ -43,9 +43,7 @@ public abstract class XmlTestSelectConfigurationAbstractAction
       return;
     }
 
-    VirtualFile[] virtualFiles = anActionEvent.getData(
-      CommonDataKeys.VIRTUAL_FILE_ARRAY
-    );
+    VirtualFile[] virtualFiles = anActionEvent.getData(VIRTUAL_FILE_ARRAY);
     var filesName = retrieveTestFileNames(virtualFiles);
 
     var runConfigs = runConfigurationsSettings
