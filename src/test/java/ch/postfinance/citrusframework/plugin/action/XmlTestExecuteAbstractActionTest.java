@@ -1,5 +1,7 @@
 package ch.postfinance.citrusframework.plugin.action;
 
+import static ch.postfinance.citrusframework.plugin.UserMessages.INVALID_RUN_CONFIGURATION;
+import static ch.postfinance.citrusframework.plugin.UserMessages.NO_RUN_CONFIGURATION_SELECTED;
 import static com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE_ARRAY;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
@@ -83,7 +85,7 @@ public class XmlTestExecuteAbstractActionTest {
     }
 
     @Test
-    public void showsError_whenInvalidConfiguration() {
+    public void showsError_whenNoExistingConfiguration() {
       doReturn(project).when(event).getProject();
 
       try (MockedStatic<RunManager> runManager = mockStatic(RunManager.class)) {
@@ -108,7 +110,44 @@ public class XmlTestExecuteAbstractActionTest {
 
           messages.verify(() ->
             Messages.showMessageDialog(
-              eq("Run Configuration not supported."),
+              eq(NO_RUN_CONFIGURATION_SELECTED),
+              eq(XmlAbstractAction.ERROR),
+              any()
+            )
+          );
+        }
+      }
+    }
+
+    @Test
+    public void showsError_whenInvalidExistingConfiguration() {
+      doReturn(project).when(event).getProject();
+
+      try (MockedStatic<RunManager> runManager = mockStatic(RunManager.class)) {
+        runManager
+          .when(() -> RunManager.getInstance(project))
+          .thenReturn(this.runManager);
+        doReturn(mock(RunnerAndConfigurationSettings.class))
+          .when(this.runManager)
+          .getSelectedConfiguration();
+
+        try (
+          MockedStatic<VirtualFileUtil> virtualFileUtil = mockStatic(
+            VirtualFileUtil.class
+          );
+          MockedStatic<Messages> messages = mockStatic(Messages.class)
+        ) {
+          virtualFileUtil
+            .when(() -> VirtualFileUtil.retrieveTestFileNames(any()))
+            .thenReturn("*Test*");
+
+          assertThatCode(() ->
+            fixture.actionPerformed(event)
+          ).doesNotThrowAnyException();
+
+          messages.verify(() ->
+            Messages.showMessageDialog(
+              eq(INVALID_RUN_CONFIGURATION),
               eq(XmlAbstractAction.ERROR),
               any()
             )

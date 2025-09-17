@@ -1,6 +1,7 @@
 package ch.postfinance.citrusframework.plugin.action;
 
 import static ch.postfinance.citrusframework.plugin.UserMessages.INVALID_RUN_CONFIGURATION;
+import static ch.postfinance.citrusframework.plugin.UserMessages.NO_RUN_CONFIGURATION_SELECTED;
 import static ch.postfinance.citrusframework.plugin.UserMessages.PROJECT_NOT_FOUND;
 import static ch.postfinance.citrusframework.plugin.VirtualFileUtil.retrieveTestFileNames;
 import static ch.postfinance.citrusframework.plugin.action.RunnerArgs.D_TESTS_TO_RUN;
@@ -44,8 +45,11 @@ public abstract class XmlTestExecuteAbstractAction extends XmlAbstractAction {
     VirtualFile[] selectedFiles = event.getData(VIRTUAL_FILE_ARRAY);
     String testFileNames = retrieveTestFileNames(selectedFiles);
 
+    if (isNull(selectedConfiguration)) {
+      showErrorDialog(NO_RUN_CONFIGURATION_SELECTED);
+      return;
+    }
     if (
-      !(isValidTestConfiguration(selectedConfiguration)) ||
       !(selectedConfiguration.getConfiguration() instanceof
         JavaTestConfigurationBase javaTestConfiguration)
     ) {
@@ -70,15 +74,6 @@ public abstract class XmlTestExecuteAbstractAction extends XmlAbstractAction {
    * @return the executor instance
    */
   public abstract Executor getExecutor();
-
-  private boolean isValidTestConfiguration(
-    RunnerAndConfigurationSettings settings
-  ) {
-    return (
-      nonNull(settings) &&
-      settings.getConfiguration() instanceof JavaTestConfigurationBase
-    );
-  }
 
   private RunnerAndConfigurationSettings cloneConfiguration(
     RunnerAndConfigurationSettings original,
