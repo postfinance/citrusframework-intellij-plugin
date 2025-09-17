@@ -5,6 +5,7 @@ import static ch.postfinance.citrusframework.plugin.UserMessages.PROJECT_NOT_FOU
 import static ch.postfinance.citrusframework.plugin.VirtualFileUtil.retrieveTestFileNames;
 import static ch.postfinance.citrusframework.plugin.action.RunnerArgs.D_TESTS_TO_RUN;
 import static com.intellij.execution.ProgramRunnerUtil.executeConfiguration;
+import static com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE_ARRAY;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -13,18 +14,25 @@ import com.intellij.execution.JavaTestConfigurationBase;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Abstract Action with the functionality for running / debugging citrus tests.
+ * Abstract action that provides functionality for running or debugging Citrus tests.
+ * <p>
+ * This action:
+ * <ul>
+ *   <li>Validates that a project is open</li>
+ *   <li>Ensures a valid run configuration is selected</li>
+ *   <li>Clones the configuration and injects test file VM parameters</li>
+ *   <li>Executes the configuration with the provided {@link Executor}</li>
+ * </ul>
  */
 public abstract class XmlTestExecuteAbstractAction extends XmlAbstractAction {
 
   @Override
-  public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-    var project = anActionEvent.getProject();
+  public void actionPerformed(@NotNull AnActionEvent event) {
+    var project = event.getProject();
     if (isNull(project)) {
       showErrorDialog(PROJECT_NOT_FOUND);
       return;
@@ -33,44 +41,73 @@ public abstract class XmlTestExecuteAbstractAction extends XmlAbstractAction {
     var runManager = RunManager.getInstance(project);
     var selectedConfiguration = runManager.getSelectedConfiguration();
 
-    VirtualFile[] virtualFiles = anActionEvent.getData(
-      CommonDataKeys.VIRTUAL_FILE_ARRAY
-    );
-
-    var filesName = retrieveTestFileNames(virtualFiles);
+    VirtualFile[] selectedFiles = event.getData(VIRTUAL_FILE_ARRAY);
+    String testFileNames = retrieveTestFileNames(selectedFiles);
 
     if (
-      isNull(selectedConfiguration) ||
+      !(isValidTestConfiguration(selectedConfiguration)) ||
       !(selectedConfiguration.getConfiguration() instanceof
-        JavaTestConfigurationBase javaTestConfigurationBase)
+        JavaTestConfigurationBase javaTestConfiguration)
     ) {
       showErrorDialog(INVALID_RUN_CONFIGURATION);
       return;
     }
 
-    // Returns a copy of the selected configuration.
-    // This copy allows us to make changes in the configuration without modifying the original configuration.
-    // So, we can add now the VM Parameters safely.
-    RunnerAndConfigurationSettings copyRunConfSettings = selectedConfiguration
-      .createFactory()
-      .create();
-    var beforeRunTasks = selectedConfiguration
-      .getConfiguration()
-      .getBeforeRunTasks();
-    copyRunConfSettings.getConfiguration().setBeforeRunTasks(beforeRunTasks); // set run tasks from original, clone does not include tasks
-    javaTestConfigurationBase.setName(selectedConfiguration.getName()); //using selectedConfiguration to get the name, the copy has no name per default
+    var clonedConfig = cloneConfiguration(
+      selectedConfiguration,
+      testFileNames,
+      javaTestConfiguration
+    );
 
-    var existingVMParameters = javaTestConfigurationBase.getVMParameters(); //retrieve existing VM parameters
-    if (nonNull(existingVMParameters)) {
-      javaTestConfigurationBase.setVMParameters(
-        existingVMParameters + " " + D_TESTS_TO_RUN + filesName
-      );
-    } else {
-      javaTestConfigurationBase.setVMParameters(D_TESTS_TO_RUN + filesName);
-    }
+    updateVmParameters(javaTestConfiguration, testFileNames);
 
-    executeConfiguration(copyRunConfSettings, getExecutor());
+    executeConfiguration(clonedConfig, getExecutor());
   }
 
+  /**
+   * Returns the executor used to run or debug the test configuration.
+   *
+   * @return the executor instance
+   */
   public abstract Executor getExecutor();
+
+  private boolean isValidTestConfiguration(
+    RunnerAndConfigurationSettings settings
+  ) {
+    return (
+      nonNull(settings) &&
+      settings.getConfiguration() instanceof JavaTestConfigurationBase
+    );
+  }
+
+  private RunnerAndConfigurationSettings cloneConfiguration(
+    RunnerAndConfigurationSettings original,
+    String testFileNames,
+    JavaTestConfigurationBase javaTestConfiguration
+  ) {
+    RunnerAndConfigurationSettings clonedConfig = original
+      .createFactory()
+      .create();
+
+    // Copy before-run tasks (clone does not include them by default)
+    var beforeRunTasks = original.getConfiguration().getBeforeRunTasks();
+    clonedConfig.getConfiguration().setBeforeRunTasks(beforeRunTasks);
+
+    // Assign a descriptive name
+    javaTestConfiguration.setName(original.getName() + ": " + testFileNames);
+
+    return clonedConfig;
+  }
+
+  private void updateVmParameters(
+    JavaTestConfigurationBase configuration,
+    String testFileNames
+  ) {
+    var existingParameters = configuration.getVMParameters();
+    var newParameters =
+      (nonNull(existingParameters) ? existingParameters + " " : "") +
+      D_TESTS_TO_RUN +
+      testFileNames;
+    configuration.setVMParameters(newParameters);
+  }
 }

@@ -1,6 +1,7 @@
 package ch.postfinance.citrusframework.plugin.action;
 
 import static ch.postfinance.citrusframework.plugin.VirtualFileUtil.containsAtLeastOneTestFile;
+import static com.intellij.openapi.actionSystem.PlatformCoreDataKeys.SELECTED_ITEMS;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -8,7 +9,6 @@ import static java.util.Objects.nonNull;
 import com.intellij.ide.projectView.impl.nodes.BasePsiNode;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ public abstract class XmlAbstractAction extends AnAction {
    */
   @Override
   public void update(@NotNull AnActionEvent event) {
-    var dataItems = event.getData(PlatformCoreDataKeys.SELECTED_ITEMS);
+    var dataItems = event.getData(SELECTED_ITEMS);
     if (isNull(dataItems)) {
       return;
     }
