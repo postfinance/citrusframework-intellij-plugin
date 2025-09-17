@@ -72,7 +72,7 @@ jobs:
       - name: Publish Plugin
         run: |
           docker build --push \
-            -f src/main/docker/Dockerfile
+            -f src/main/docker/Dockerfile \
             -t ghcr.io/postfinance/citrusframework/intellij-plugin/repository:${{ github.event.release.tag_name }}
             .
 
