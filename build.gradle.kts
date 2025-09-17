@@ -115,6 +115,15 @@ tasks {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
     }
 
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from({
+            configurations.runtimeClasspath.get()
+                .filter { it.name.endsWith("jar") }
+                .map { zipTree(it) }
+        })
+    }
+
     publishPlugin {
         dependsOn(patchChangelog)
     }
