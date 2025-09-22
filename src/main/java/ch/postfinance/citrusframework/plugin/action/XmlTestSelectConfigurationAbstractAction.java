@@ -1,50 +1,35 @@
 package ch.postfinance.citrusframework.plugin.action;
 
 import static ch.postfinance.citrusframework.plugin.UserMessages.CONFIGURATION_NOT_FOUND;
-import static ch.postfinance.citrusframework.plugin.UserMessages.INVALID_RUN_CONFIGURATION;
-import static ch.postfinance.citrusframework.plugin.UserMessages.PROJECT_NOT_FOUND;
-import static ch.postfinance.citrusframework.plugin.VirtualFileUtil.retrieveTestFileNames;
-import static ch.postfinance.citrusframework.plugin.action.RunnerArgs.D_TESTS_TO_RUN;
-import static com.intellij.execution.ProgramRunnerUtil.executeConfiguration;
-import static com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE_ARRAY;
+import static ch.postfinance.citrusframework.plugin.UserMessages.NO_RUN_CONFIGURATION_SELECTED;
+import static java.lang.Thread.currentThread;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 import ch.postfinance.citrusframework.plugin.dialog.RunConfigurationDialogWrapper;
 import ch.postfinance.citrusframework.plugin.model.RunConfig;
+import com.google.common.annotations.VisibleForTesting;
 import com.intellij.execution.Executor;
-import com.intellij.execution.JavaTestConfigurationBase;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.vfs.VirtualFile;
 import java.util.List;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
- * Abstract Action with the functionality for displaying a dialog to the user, so that he can select the run configuration file needed to run / debug citrus tests.
+ * Abstract Action with the functionality for displaying a dialog to the user, so that it can select the run configuration file needed to run / debug citrus tests.
  */
 public abstract class XmlTestSelectConfigurationAbstractAction
-  extends XmlAbstractAction {
+  extends XmlTestExecuteAbstractAction {
 
   @Override
-  public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-    var project = anActionEvent.getProject();
-    if (isNull(project)) {
-      showErrorDialog(PROJECT_NOT_FOUND);
-      return;
-    }
-
-    var runManager = RunManager.getInstance(project);
+  @VisibleForTesting
+  public RunnerAndConfigurationSettings selectRunConfiguration(
+    RunManager runManager
+  ) throws TestInvocationException {
     var runConfigurationsSettings = runManager.getAllSettings();
     if (runConfigurationsSettings.isEmpty()) {
-      showErrorDialog(CONFIGURATION_NOT_FOUND);
-      return;
+      throw new TestInvocationException(CONFIGURATION_NOT_FOUND);
     }
-
-    VirtualFile[] virtualFiles = anActionEvent.getData(VIRTUAL_FILE_ARRAY);
-    var filesName = retrieveTestFileNames(virtualFiles);
 
     var runConfigs = runConfigurationsSettings
       .stream()
@@ -56,47 +41,64 @@ public abstract class XmlTestSelectConfigurationAbstractAction
       )
       .toList();
 
+    var runnerAndConfigurationSettings = new ArrayBlockingQueue<
+      RunnerAndConfigurationSettings
+    >(1);
+
+    openDialogAndWaitForRunnerAndConfigurationSettingsSelection(
+      runManager,
+      runConfigs,
+      runnerAndConfigurationSettings
+    );
+
+    return runnerAndConfigurationSettings.poll();
+  }
+
+  private void openDialogAndWaitForRunnerAndConfigurationSettingsSelection(
+    RunManager runManager,
+    List<RunConfig> runConfigs,
+    ArrayBlockingQueue<
+      RunnerAndConfigurationSettings
+    > runnerAndConfigurationSettings
+  ) {
     var runConfigurationDialogWrapper = new RunConfigurationDialogWrapper(
       runConfigs
     );
     runConfigurationDialogWrapper.show(selectedRunConfig -> {
       Optional<
         RunnerAndConfigurationSettings
-      > foundRunnerAndConfigurationSettings = getRunnerAndConfigurationSettings(
-        runManager.getAllSettings(),
-        selectedRunConfig.name()
-      );
+      > foundRunnerAndConfigurationSettings =
+        getSelectedRunnerAndConfigurationSettings(
+          runManager.getAllSettings(),
+          selectedRunConfig.name()
+        );
 
       foundRunnerAndConfigurationSettings.ifPresent(
         runManager::setSelectedConfiguration
       );
       var selectedConfiguration = runManager.getSelectedConfiguration();
 
+      if (isNull(selectedConfiguration)) {
+        throw new TestInvocationException(NO_RUN_CONFIGURATION_SELECTED);
+      }
+
       if (
-        isNull(selectedConfiguration) ||
-        !(selectedConfiguration.getConfiguration() instanceof
-          JavaTestConfigurationBase javaTestConfigurationBase)
+        !selectedConfiguration.getName().equals(PLUGIN_RUN_CONFIGURATION_NAME)
       ) {
-        showErrorDialog(INVALID_RUN_CONFIGURATION);
-        return;
-      }
-
-      // Returns a copy of the selected configuration.
-      // This copy allows us to make changes in the configuration without modifying the original configuration.
-      // So, we can add now the VM Parameters safely.
-      var copyRunConfSettings = selectedConfiguration.createFactory().create();
-      javaTestConfigurationBase.setName(selectedConfiguration.getName()); // using selectedConfiguration to get the name, the copy has no name per default
-
-      var existingVMParameters = javaTestConfigurationBase.getVMParameters();
-      if (nonNull(existingVMParameters)) {
-        javaTestConfigurationBase.setVMParameters(
-          existingVMParameters + " " + D_TESTS_TO_RUN + filesName
+        selectedConfiguration = cloneConfiguration(
+          runManager,
+          selectedConfiguration
         );
-      } else {
-        javaTestConfigurationBase.setVMParameters(D_TESTS_TO_RUN + filesName);
       }
 
-      executeConfiguration(copyRunConfSettings, getExecutor());
+      try {
+        runnerAndConfigurationSettings.put(selectedConfiguration);
+      } catch (InterruptedException e) {
+        currentThread().interrupt();
+        throw new IllegalStateException(
+          "Unreachable state: Internal settings queue can never be full!"
+        );
+      }
     });
   }
 
@@ -109,7 +111,7 @@ public abstract class XmlTestSelectConfigurationAbstractAction
    */
   private Optional<
     RunnerAndConfigurationSettings
-  > getRunnerAndConfigurationSettings(
+  > getSelectedRunnerAndConfigurationSettings(
     List<RunnerAndConfigurationSettings> runnerAndConfigurationSettingsList,
     String selectedRunConfigurationName
   ) {
