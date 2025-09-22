@@ -1,88 +1,85 @@
 package ch.postfinance.citrusframework.plugin.action;
 
-import static ch.postfinance.citrusframework.plugin.VirtualFileUtil.retrieveTestFileNames;
+import static ch.postfinance.citrusframework.plugin.UserMessages.NO_RUN_CONFIGURATION_SELECTED;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
-import com.intellij.execution.Executor;
-import com.intellij.execution.JavaTestConfigurationBase;
-import com.intellij.execution.ProgramRunnerUtil;
+import com.google.common.annotations.VisibleForTesting;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.execution.junit.JUnitConfiguration;
 
 /**
- * Abstract Action with the functionality for running / debugging citrus tests.
+ * Abstract action that provides functionality for running or debugging Citrus tests.
+ * <p>
+ * This action:
+ * <ul>
+ *   <li>Ensures a valid run configuration is selected</li>
+ *   <li>Clones the configuration</li>
+ * </ul>
  */
 public abstract class XmlTestExecuteAbstractAction extends XmlAbstractAction {
 
-  private static final String D_TESTS_TO_RUN = "-Dtests.to.run=";
-  private static final String PROJECT_NOT_FOUND_MESSAGE = "Project not found.";
-  private static final String RUN_CONFIGURATION_MESSAGE =
-    "Run Configuration not supported.";
-
   @Override
-  public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-    VirtualFile[] virtualFiles = anActionEvent.getData(
-      CommonDataKeys.VIRTUAL_FILE_ARRAY
-    );
-
-    //*GS2010-26866-03_DebitCards_Actions_Card_Deactivate_Test*,*GS2010-26866-04_DebitCards_Actions_Replacement_Test*
-    final String filesName = retrieveTestFileNames(virtualFiles);
-
-    Project project = anActionEvent.getProject();
-
-    // This should actually be always false (see {@link XmlAbstractAction#update(AnActionEvent)}) is tested to be 100% sure ;-)
-    if (isNull(project)) {
-      showErrorDialog(PROJECT_NOT_FOUND_MESSAGE);
-      return;
+  @VisibleForTesting
+  public RunnerAndConfigurationSettings selectRunConfiguration(
+    RunManager runManager
+  ) throws TestInvocationException {
+    var selectedConfiguration = runManager.getSelectedConfiguration();
+    if (isNull(selectedConfiguration)) {
+      throw new TestInvocationException(NO_RUN_CONFIGURATION_SELECTED);
     }
 
-    final RunManager runManager = RunManager.getInstance(project);
-    RunnerAndConfigurationSettings selectedConfiguration =
-      runManager.getSelectedConfiguration();
-
-    // The plugin supports only run configurations that are subclasses of JavaTestConfigurationBase
-    if (
-      nonNull(selectedConfiguration) &&
-      selectedConfiguration.getConfiguration() instanceof
-      JavaTestConfigurationBase javaTestConfigurationBase
-    ) {
-      // Returns a copy of the selected configuration. This copy allows us to make changes in the configuration without modifying
-      // the original configuration. So, we can add now the VM Parameters safety
-      RunnerAndConfigurationSettings copyRunConfSettings = selectedConfiguration
-        .createFactory()
-        .create();
-      var beforeRunTasks = selectedConfiguration
-        .getConfiguration()
-        .getBeforeRunTasks();
-      copyRunConfSettings.getConfiguration().setBeforeRunTasks(beforeRunTasks); // set run tasks from original, clone does not include tasks
-      javaTestConfigurationBase.setName(selectedConfiguration.getName()); //using selectedConfiguration to get the name, the copy has no name per default
-      String existingVMParameters = javaTestConfigurationBase.getVMParameters(); //retrieve existing VM parameters
-      if (nonNull(existingVMParameters)) {
-        javaTestConfigurationBase.setVMParameters(
-          existingVMParameters + " " + D_TESTS_TO_RUN + filesName
-        );
-      } else {
-        javaTestConfigurationBase.setVMParameters(D_TESTS_TO_RUN + filesName);
-      }
-      ProgramRunnerUtil.executeConfiguration(
-        copyRunConfSettings,
-        getExecutor()
-      );
-    } else {
-      showErrorDialog(RUN_CONFIGURATION_MESSAGE);
-    }
+    return cloneConfiguration(runManager, selectedConfiguration);
   }
 
-  /**
-   * Overwrite this method for setting the Executor for the test
-   *
-   * @return the Executor
-   **/
-  public abstract Executor getExecutor();
+  protected RunnerAndConfigurationSettings cloneConfiguration(
+    RunManager runManager,
+    RunnerAndConfigurationSettings selectedConfiguration
+  ) {
+    var clonedConfig = runManager.createConfiguration(
+      PLUGIN_RUN_CONFIGURATION_NAME,
+      selectedConfiguration.getFactory()
+    );
+
+    copyClassInformation(selectedConfiguration, clonedConfig);
+    copyBeforeRunTasks(selectedConfiguration, clonedConfig);
+
+    runManager.addConfiguration(clonedConfig);
+
+    return clonedConfig;
+  }
+
+  private void copyClassInformation(
+    RunnerAndConfigurationSettings selectedConfiguration,
+    RunnerAndConfigurationSettings clonedConfig
+  ) {
+    if (
+      !(selectedConfiguration.getConfiguration() instanceof
+          JUnitConfiguration selectedJUnitConfiguration) ||
+      !(clonedConfig.getConfiguration() instanceof
+          JUnitConfiguration clonedJUnitConfiguration)
+    ) return;
+
+    clonedJUnitConfiguration.setModule(
+      selectedJUnitConfiguration.getModules()[0]
+    );
+    clonedJUnitConfiguration.setWorkingDirectory(
+      selectedJUnitConfiguration.getWorkingDirectory()
+    );
+
+    clonedJUnitConfiguration.getPersistentData().PACKAGE_NAME =
+      selectedJUnitConfiguration.getPersistentData().getPackageName();
+    clonedJUnitConfiguration.getPersistentData().MAIN_CLASS_NAME =
+      selectedJUnitConfiguration.getPersistentData().getMainClassName();
+    clonedJUnitConfiguration.getPersistentData().METHOD_NAME =
+      selectedJUnitConfiguration.getPersistentData().getMethodName();
+  }
+
+  private static void copyBeforeRunTasks(
+    RunnerAndConfigurationSettings source,
+    RunnerAndConfigurationSettings target
+  ) {
+    var beforeRunTasks = source.getConfiguration().getBeforeRunTasks();
+    target.getConfiguration().setBeforeRunTasks(beforeRunTasks);
+  }
 }
