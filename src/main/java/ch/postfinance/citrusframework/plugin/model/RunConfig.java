@@ -2,8 +2,8 @@ package ch.postfinance.citrusframework.plugin.model;
 
 public class RunConfig {
 
-  private String name;
-  private String type;
+  private final String name;
+  private final String type;
 
   public RunConfig(String name, String type) {
     this.name = name;
