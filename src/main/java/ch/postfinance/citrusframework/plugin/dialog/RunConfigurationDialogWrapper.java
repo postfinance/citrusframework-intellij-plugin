@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class RunConfigurationDialogWrapper extends DialogWrapper {
 
-  public static Map<String, Icon> runConfigIcons = new HashMap<>();
+  private static final Map<String, Icon> runConfigIcons = new HashMap<>();
 
   static {
     runConfigIcons.put("JUnit", AllIcons.RunConfigurations.Junit);
@@ -70,7 +70,10 @@ public class RunConfigurationDialogWrapper extends DialogWrapper {
    */
   public void show(Consumer<RunConfig> callback) {
     if (showAndGet()) {
-      callback.consume(runConfigDescriptorJBList.getSelectedValue());
+      RunConfig selected = runConfigDescriptorJBList.getSelectedValue();
+      if (selected != null) {
+        callback.consume(selected);
+      }
     }
   }
 

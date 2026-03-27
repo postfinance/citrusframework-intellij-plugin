@@ -5,8 +5,6 @@ import static com.intellij.ide.highlighter.XmlFileType.DOT_DEFAULT_EXTENSION;
 
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
@@ -18,6 +16,10 @@ import java.util.stream.Collectors;
 public final class VirtualFileUtil {
 
   private static final String TEST_XML = "Test.xml";
+
+  private VirtualFileUtil() {
+    // Private constructor to prevent instantiation
+  }
 
   public static String retrieveTestFileNames(VirtualFile[] virtualFiles) {
     Map<String, VirtualFile> foundFiles = new TreeMap<>(); // Using map to avoid duplicated selections
@@ -47,9 +49,20 @@ public final class VirtualFileUtil {
   }
 
   public static boolean containsAtLeastOneTestFile(VirtualFile[] virtualFiles) {
-    List<VirtualFile> virtualFileList = new ArrayList<>();
-    iterateTroughChildren(virtualFiles, virtualFileList::add);
-    return virtualFileList.stream().anyMatch(VirtualFileUtil::isTestFile);
+    return containsTestFileRecursive(virtualFiles);
+  }
+
+  private static boolean containsTestFileRecursive(VirtualFile[] virtualFiles) {
+    for (VirtualFile virtualFile : virtualFiles) {
+      if (virtualFile.isDirectory()) {
+        if (containsTestFileRecursive(VfsUtil.getChildren(virtualFile))) {
+          return true;
+        }
+      } else if (isTestFile(virtualFile)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

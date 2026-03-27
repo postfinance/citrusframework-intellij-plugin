@@ -37,7 +37,7 @@
     </group>
 
     <group
-      id="ch.pf.sir.citrus.debugger"
+      id="ch.postfinance.citrusframework.intellij.plugin.debug"
       text="Debug XML Citrus Test"
       popup="true"
       icon="/zitrone.png"
