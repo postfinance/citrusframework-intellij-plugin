@@ -21,7 +21,8 @@ import org.jetbrains.annotations.NotNull;
  * he can select the run configuration file needed to run / debug citrus tests.
  */
 public abstract class XmlTestSelectConfigurationAbstractAction
-  extends XmlAbstractAction {
+  extends XmlAbstractAction
+{
 
   private static final String PROJECT_NOT_FOUND = "Project not found.";
   private static final String CONFIGURATION_NOT_FOUND_MESSAGE =

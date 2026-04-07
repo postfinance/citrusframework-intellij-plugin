@@ -12,12 +12,12 @@
   "devDependencies": {
     "@commitlint/config-conventional": "20.5.0",
     "@prettier/plugin-xml": "3.4.2",
-    "commitlint": "19.8.1",
+    "commitlint": "20.5.0",
     "husky": "9.1.7",
     "lint-staged": "16.4.0",
     "prettier": "3.8.1",
-    "prettier-plugin-java": "2.7.5",
-    "prettier-plugin-packagejson": "2.5.19"
+    "prettier-plugin-java": "2.8.1",
+    "prettier-plugin-packagejson": "3.0.2"
   },
-  "packageManager": "pnpm@10.15.0"
+  "packageManager": "pnpm@10.33.0"
 }
