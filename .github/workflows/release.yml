@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write
       pull-requests: write
     steps:
       # Free GitHub Actions Environment Disk Space
@@ -72,8 +73,8 @@ jobs:
       - name: Publish Plugin
         run: |
           docker build --push \
-            -f src/main/docker/Dockerfile
-            -t ghcr.io/postfinance/citrusframework/intellij-plugin/repository:${{ github.event.release.tag_name }}
+            -f src/main/docker/Dockerfile \
+            -t ghcr.io/postfinance/citrusframework/intellij-plugin/repository:${{ github.event.release.tag_name }} \
             .
 
       # Upload an artifact as a release asset
