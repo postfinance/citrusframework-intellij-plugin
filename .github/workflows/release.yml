@@ -64,7 +64,7 @@ jobs:
 
       # Build plugin
       - name: Build plugin
-        run: ./gradlew buildPlugin
+        run: ./gradlew buildPlugin -PpluginVersion=${{ github.event.release.tag_name }}
 
       # Login before Image Publishing
       - name: Login to GitHub Container Registry
